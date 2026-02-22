@@ -1,0 +1,21 @@
+列出資料夾 PATH
+磁碟區序號為 48B8-FFA2
+C:.
+│  .gitignore
+│  LICENSE
+│  README.md
+│  requirements.txt
+│  setup.py
+│  tree.txt
+│  WhisperX_ffmpeg_2_Subtitle.py
+│  
+├─colab
+│      WhisperX_Subtitle_Colab.ipynb
+│      
+├─docs
+│      examples.md
+│      usage.md
+│      
+└─tests
+        test_basic.py
+        

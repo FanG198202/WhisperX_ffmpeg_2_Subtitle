@@ -1,0 +1,15 @@
+# Core dependencies
+torch>=2.0.0
+whisperx>=3.1.1
+soundfile>=0.12.1
+numpy>=1.24.0
+
+# Audio processing
+ffmpeg-python>=0.2.0
+
+# Utilities
+ipywidgets>=8.0.0
+IPython>=8.0.0
+
+# Testing (optional)
+pytest>=7.0.0
