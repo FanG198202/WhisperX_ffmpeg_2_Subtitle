@@ -599,9 +599,6 @@ def install_dependencies():
     subprocess.run(["pip", "install", "ffmpeg-python", "whisperx", "soundfile", "numpy", "torchaudio", "transformers"], check=True)
     print("✅ 依賴安裝完成！")
 
-# 自動執行安裝函數（關鍵：Colab必須手動調，否則不執行）
-install_dependencies()
-
 # 執行安裝和啓動界面
 if __name__ == "__main__":
     install_dependencies()
