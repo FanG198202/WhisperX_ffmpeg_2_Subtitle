@@ -596,8 +596,8 @@ def install_dependencies():
     subprocess.run(["apt", "update"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     subprocess.run(["apt", "install", "-y", "ffmpeg"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-    # 安裝Python包
-    !pip install -q ffmpeg-python whisperx torch soundfile numpy
+    # 安裝Python包 - 使用 subprocess.run 而不是 !pip
+    subprocess.run(["pip", "install", "-q", "ffmpeg-python", "whisperx", "torch", "soundfile", "numpy"])
 
     print("✅ 依賴安裝完成！")
 
