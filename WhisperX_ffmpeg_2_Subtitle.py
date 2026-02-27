@@ -44,6 +44,35 @@ import subprocess
 import shutil
 import zipfile
 from pathlib import Path
+import sys
+
+# ===========================================================
+# [NEW] 全域日誌重定向攔截器 - 確保所有 print 與錯誤同步寫入檔案
+# ===========================================================
+class Logger(object):
+    def __init__(self, filename="/content/colab_run.log"):
+        self.terminal = sys.stdout
+        # 使用 'a' 模式（append）以接續 Cell 1 的安裝紀錄
+        try:
+            self.log = open(filename, "a", encoding="utf-8")
+        except:
+            # 如果目錄不存在，退而求其次寫在當前目錄
+            self.log = open("colab_run.log", "a", encoding="utf-8")
+
+    def write(self, message):
+        self.terminal.write(message)
+        self.log.write(message)
+        self.log.flush()
+
+    def flush(self):
+        self.terminal.flush()
+        self.log.flush()
+
+# 在 Colab 環境下自動啟動重定向
+if os.path.exists("/content"):
+    sys.stdout = Logger("/content/colab_run.log")
+    sys.stderr = sys.stdout
+    print(f"\n[SYSTEM] 日誌同步已啟動：/content/colab_run.log")
 
 try:
     from google.colab import drive, files as colab_files
@@ -749,7 +778,7 @@ def install_dependencies():
     try:
         # 改用更穩定的 FFmpeg 安裝方式（解決 exit status 100）
         subprocess.run(["apt-get", "update", "-qq"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        subprocess.run(["apt-get", "install", "-y", "-qq", "ffmpeg", "ffprobe", "--fix-missing"], 
+        subprocess.run(["apt-get", "install", "-y", "-qq", "ffmpeg", "--fix-missing"], 
                        check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     except Exception as e:
         print(f"[WARN] FFmpeg 安裝失敗（可能已預裝）: {e}")
