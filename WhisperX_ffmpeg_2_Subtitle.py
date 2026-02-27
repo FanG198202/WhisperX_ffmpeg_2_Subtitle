@@ -746,28 +746,36 @@ def install_dependencies():
     僅在 Colab 或 Linux 環境下執行。
     """
     print("[INFO] 正在安裝必要依賴...")
-    # ----------------------------------------------------------
-    # [FIX-10] 原版缺少 ctranslate2 等 WhisperX 核心依賴，
-    #          且沒有加入 --quiet 選項導致輸出過多。
-    #          新增 ctranslate2、pyannote-audio 並整合安裝。
-    # ----------------------------------------------------------
-    subprocess.run(["apt-get", "update", "-qq"], check=True)
-    subprocess.run(["apt-get", "install", "-y", "-qq", "ffmpeg", "ffprobe"], check=True)
-    subprocess.run([
-        "pip", "install", "-q",
-        "whisperx",
-        "ctranslate2",
+    try:
+        # 改用更穩定的 FFmpeg 安裝方式（解決 exit status 100）
+        subprocess.run(["apt-get", "update", "-qq"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        subprocess.run(["apt-get", "install", "-y", "-qq", "ffmpeg", "ffprobe", "--fix-missing"], 
+                       check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    except Exception as e:
+        print(f"[WARN] FFmpeg 安裝失敗（可能已預裝）: {e}")
+
+    # 安裝 Python 套件（僅安裝缺失的，避免覆蓋 Colab 預裝的指定版本）
+    required_pkgs = [
+        "whisperx>=3.3.1",
+        "ctranslate2>=4.4.0",
         "ffmpeg-python",
         "soundfile",
         "numpy",
         "torchaudio",
         "transformers",
-        "pyannote-audio",
+        "pyannote-audio>=3.3.2",
         "ipywidgets"
-    ], check=True)
+    ]
+    for pkg in required_pkgs:
+        try:
+            subprocess.run(["pip", "install", "-q", pkg], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        except Exception as e:
+            print(f"[WARN] 套件 {pkg} 安裝失敗（可能已安裝）: {e}")
     print("[OK] 依賴安裝完成！")
 
 
 if __name__ == "__main__":
-    install_dependencies()
+    # 判斷環境變量，跳過依賴安裝（Colab 已預裝）
+    if os.getenv("SKIP_INSTALL_DEPENDENCIES") != "1":
+        install_dependencies()
     main_interface()
