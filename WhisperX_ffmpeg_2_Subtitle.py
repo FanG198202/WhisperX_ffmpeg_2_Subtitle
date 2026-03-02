@@ -592,13 +592,11 @@ def main_interface():
 # ===================== 安裝依賴 =====================
 def install_dependencies():
     print("📦 正在安裝必要依賴...")
-    # 安裝FFmpeg
-    subprocess.run(["apt", "update"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    subprocess.run(["apt", "install", "-y", "ffmpeg"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-    # 安裝Python包
-    !pip install -q ffmpeg-python whisperx torch soundfile numpy
-
+    # 安裝FFmpeg - 取消PIPE，打印日誌，確保安裝成功
+    subprocess.run(["apt", "update"], check=True)
+    subprocess.run(["apt", "install", "-y", "ffmpeg"], check=True)
+    # 安裝Python包 - 補全WhisperX核心依賴，取消-q屏蔽日誌，跳過預裝的torch
+    subprocess.run(["pip", "install", "ffmpeg-python", "whisperx", "soundfile", "numpy", "torchaudio", "transformers"], check=True)
     print("✅ 依賴安裝完成！")
 
 # 執行安裝和啓動界面
